@@ -24,7 +24,7 @@ disk_check() {
     local usage
     usage=$(df --output=pcent "$DISK_PATH" | tail -n 1 | tr -dc '0-9')
 
-    if [ "$usage" -ge "$DISK_KO"]; then 
+    if [ "$usage" -ge "$DISK_KO" ]; then 
         output_helper FAIL disk "$DISK_PATH is ${usage}% full"
         return 2
     elif [ "$usage" -ge "$DISK_WARN" ]; then 
@@ -37,9 +37,13 @@ disk_check() {
 }
 
 main(){
+    local worst=0
+    local rc
 
     disk_check
-    exit $?
+    rc=$?
+    if [ $rc -gt $worst ]; then worst=$rc; fi
+    exit "$worst"
 
 }
 
